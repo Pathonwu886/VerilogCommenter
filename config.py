@@ -3,7 +3,7 @@
 import os
 from pathlib import Path
 # DeepSeek API配置
-DEEPSEEK_API_KEY = "sk-61dc4ca1b1194bbf95ef4100bc8b1ed0"
+DEEPSEEK_API_KEY = "xxx_add your api key here_xxx"
 DEEPSEEK_MODEL = "deepseek-chat"
 
 # 处理配置
