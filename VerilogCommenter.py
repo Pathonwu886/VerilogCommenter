@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/Pycharm_prj/VerilogCommenter python3
 """
 Verilog源码批量注释工具
 使用DeepSeek API对Verilog文件进行注释，生成Markdown文档
