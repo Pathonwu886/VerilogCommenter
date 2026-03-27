@@ -159,7 +159,7 @@ class VerilogCommentGenerator:
             return False,"保存文件失败"
 
     def process_directory(self, root_dir: str, output_dir: str, extensions: List[str] = None,
-                          recursive: bool = True, include_code: bool = True, delay: float = 1.0) -> Dict:
+                          recursive: bool = True, include_code: bool = True, delay: float = 1.0, overwrite: bool = False) -> Dict:
         """
         批量处理目录中的所有Verilog文件
 
@@ -170,6 +170,7 @@ class VerilogCommentGenerator:
         recursive: 是否递归处理子目录
         include_code: 是否在注释中包含源代码
         delay: API调用之间的延迟（秒）
+        overwrite: 是否覆盖已有文件写入
 
         Returns:
         处理结果统计
@@ -202,9 +203,11 @@ class VerilogCommentGenerator:
         stats = {
             'total': len(verilog_files),
             'success': 0,
-            'failed': 0,
-            'success_files': [],  # 成功处理的文件列表
-            'failed_files': []    # 失败的文件详细信息列表
+            'failed': 0,  #失败的文件计数
+            'skipped': 0,  #跳过的文件计数
+            # 'success_files': [],  # 成功处理的文件列表
+            'failed_files': [],    # 失败的文件详细信息列表
+            # 'skipped_files': []   #跳过的文件列表
         }
 
         #处理每个文件
@@ -216,16 +219,30 @@ class VerilogCommentGenerator:
             target_dir = output_path / rel_path.parent / "Readme"  #构建输出目录的完整路径：rel_path.parent获取父目录（去除文件名）
             target_dir.mkdir(parents=True, exist_ok=True)
 
+            # 检查输出文件是否已存在
+            output_file = target_dir / f"{v_file.stem}.md"
+            if not overwrite and output_file.exists():
+                print(f"   ⏭️  跳过已存在的文件: {output_file}")
+                stats['skipped'] += 1
+                # stats['skipped_files'].append({
+                #     'file': str(v_file),
+                #     # 'relative_path': str(rel_path),
+                #     'directory': str(v_file.parent),
+                #     'filename': v_file.name,
+                #     'reason': '描述文件已存在'
+                # })
+                continue  # 跳过此文件
+
             #处理文件
             success, error_msg = self.process_file(str(v_file), target_dir, include_code)
             if success:
                 stats['success'] += 1
-                stats['success_files'].append({'file': str(v_file)})
+                # stats['success_files'].append({'file': str(v_file)})
             else:
                 stats['failed'] += 1
                 stats['failed_files'].append({
                     'file': str(v_file),
-                    'relative_path': str(rel_path),
+                    # 'relative_path': str(rel_path),
                     'directory': str(v_file.parent),
                     'filename': v_file.name,
                     'error': error_msg or '未知错误'})
