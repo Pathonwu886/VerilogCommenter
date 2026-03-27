@@ -66,7 +66,7 @@ def save_failed_files_log(failed_files, output_file="failed_files.txt"):
                 for file_info in files:
                     f.write(f"   文件名: {file_info['filename']}\n")
                     f.write(f"   完整路径: {file_info['file']}\n")
-                    f.write(f"   相对路径: {file_info['relative_path']}\n")
+                    # f.write(f"   相对路径: {file_info['relative_path']}\n")
                     if 'error' in file_info:
                         f.write(f"   错误原因: {file_info['error']}\n")
                     f.write("\n")
@@ -108,7 +108,7 @@ def main():
 
     if not has_files:
         print("\n💡 建议:")
-        print("   1. 确认Verilog文件扩展名是否正确 (.v, .sv, .vh, .svh)")
+        print("   1. 确认Verilog文件扩展名是否正确")
         print("   2. 检查文件是否在正确的目录中")
         print("   3. 尝试使用绝对路径而不是相对路径")
         print("   4. 运行 python check_files.py 进行详细诊断")
@@ -124,12 +124,14 @@ def main():
         extensions=config.FILE_EXTENSIONS,
         recursive=config.RECURSIVE,
         include_code=config.INCLUDE_CODE,
-        delay=config.API_DELAY)
+        delay=config.API_DELAY,
+        overwrite=config.OVERWRITE)
     #打印统计信息
     print("\n" + "=" * 60)
     print("📊 处理完成统计:")
     print(f"   总文件数: {stats['total']}")
     print(f"   ✅ 成功: {stats['success']}")
+    print(f"   ⏭️  跳过: {stats['skipped']}")
     print(f"   ❌ 失败: {stats['failed']}")
     # 如果有失败的文件，打印详细信息
     if stats['failed'] > 0 and 'failed_files' in stats:
@@ -140,5 +142,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
